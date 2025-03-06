@@ -10,6 +10,7 @@ export default function WeekView() {
   const [dragging, setDragging] = useState(false);
   const [selectedDays, setSelectedDays] = useState([]);
 
+  
   useEffect(() => {
     const events = savedEvents.filter(evt => {
       const eventDate = dayjs(evt.day);
@@ -62,7 +63,7 @@ export default function WeekView() {
           </span>
         </button>
       </header>
-      <div className="grid grid-cols-7 gap-4">
+      <div className="grid grid-cols-7">
         {daysOfWeek.map(day => (
           <div
             key={day.format("YYYY-MM-DD")}

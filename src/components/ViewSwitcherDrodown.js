@@ -42,7 +42,7 @@ export default function ViewSwitcherDropdown() {
         <div className="dropdown-menu">
           <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
             <button
-              className={`block px-4 py-2 text-sm text-gray-700 w-full text-left ${viewMode === "month" ? "active" : ""}`}
+              className={`block px-4 py-2 text-sm text-blue-700 w-full text-left ${viewMode === "month" ? "active" : ""}`}
               onClick={() => handleViewChange("month")}
             >
               Month 

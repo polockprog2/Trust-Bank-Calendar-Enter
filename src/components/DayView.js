@@ -5,10 +5,8 @@ import GlobalContext from "../context/GlobalContext";
 export default function DayView() {
   const { daySelected, savedEvents } = useContext(GlobalContext);
 
-  // Generate an array of hours for a day
   const hoursOfDay = Array.from({ length: 24 }, (_, i) => i);
 
-  // Filter events for the selected day
   const eventsForDay = savedEvents.filter(event =>
     dayjs(event.date).isSame(daySelected, "day")
   );
