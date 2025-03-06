@@ -1,58 +1,36 @@
-import React, { useContext, useEffect, useState } from "react";
-import GlobalContext from "../context/GlobalContext";
-import CalendarEvent from "./CalendarEvent";
+import React, { useContext } from "react";
 import dayjs from "dayjs";
+import GlobalContext from "../context/GlobalContext";
 
 export default function DayView() {
-  const { daySelected, setDaySelected, savedEvents } = useContext(GlobalContext);
-  const [dayEvents, setDayEvents] = useState([]);
+  const { daySelected, savedEvents } = useContext(GlobalContext);
 
-  useEffect(() => {
-    const events = savedEvents.filter(evt => {
-      const eventDate = dayjs(evt.day);
-      return eventDate.isSame(daySelected, "day");
-    });
-    setDayEvents(events);
-  }, [savedEvents, daySelected]);
-
+  // Generate an array of hours for a day
   const hoursOfDay = Array.from({ length: 24 }, (_, i) => i);
 
-  function handlePrevDay() {
-    setDaySelected(daySelected.subtract(1, "day"));
-  }
-
-  function handleNextDay() {
-    setDaySelected(daySelected.add(1, "day"));
-  }
+  // Filter events for the selected day
+  const eventsForDay = savedEvents.filter(event =>
+    dayjs(event.date).isSame(daySelected, "day")
+  );
 
   return (
     <div className="p-4 h-full w-full">
+      <h2 className="text-2xl font-bold mb-4">Day View</h2>
       <div className="border p-4 rounded-lg shadow-md h-full w-full">
-        <header className="flex justify-between items-left mb-4">
-          <button onClick={handlePrevDay}>
-            <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
-              chevron_left
-            </span>
-          </button>
-          <h3 className="text-xl font-semibold">
-            {daySelected ? daySelected.format("dddd, MMM D") : "No day selected"}
-          </h3>
-          <button onClick={handleNextDay}>
-            <span className="material-icons-outlined cursor-pointer text-gray-600 mx-2">
-              chevron_right
-            </span>
-          </button>
-        </header>
+        <h3 className="text-xl font-semibold mb-2">
+          {daySelected ? daySelected.format("dddd, MMM D") : "No day selected"}
+        </h3>
         <div className="grid grid-rows-24 gap-1 h-full w-full">
           {hoursOfDay.map(hour => (
             <div key={hour} className="border-t border-gray-200 p-1 flex flex-col justify-between">
               <span className="text-xs text-gray-500">{dayjs().hour(hour).format("h A")}</span>
               <ul className="list-disc pl-5">
-                {dayEvents
-                  .filter(event => dayjs(event.day).hour() === hour)
+                {eventsForDay
+                  .filter(event => dayjs(event.date).hour() === hour)
                   .map(event => (
                     <li key={event.id} className="mb-2">
-                      <CalendarEvent event={event} />
+                      <span className="font-medium">{event.title}</span>
+                      <p className="text-gray-600">{event.description}</p>
                     </li>
                   ))}
               </ul>

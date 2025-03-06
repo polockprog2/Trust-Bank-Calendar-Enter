@@ -11,6 +11,7 @@ import GlobalContext from "./context/GlobalContext";
 import EventModal from "./components/EventModal";
 
 
+
 function App() {
   const [currentMonth, setCurrentMonth] = useState(getMonth());
   const { monthIndex, showEventModal, viewMode, } = useContext(GlobalContext);
@@ -22,7 +23,7 @@ function App() {
   return (
     <React.Fragment>
       {showEventModal && <EventModal />}
-
+      
       <div className="h-screen flex flex-col">
         <CalendarHeader />
         <div className="flex flex-1">

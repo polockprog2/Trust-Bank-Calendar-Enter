@@ -37,7 +37,13 @@ function globalReducer(state, action) {
           event.id === action.payload.id ? action.payload : event
         ),
       };
-    // other cases...
+    case "delete":
+      return {
+        ...state,
+        savedEvents: state.savedEvents.filter(
+          (event) => event.id !== action.payload.id
+        ),
+      };
     default:
       return state;
   }
@@ -60,9 +66,7 @@ function initEvents() {
   const parsedEvents = storageEvents ? JSON.parse(storageEvents) : [];
   return parsedEvents;
 }
-export function GlobalProvider({ children }) {
-  const [state, dispatch] = useReducer(globalReducer, initialState);
-}
+
 export function ContextWrapper({ children }) {
   const [monthIndex, setMonthIndex] = useState(dayjs().month());
   const [viewMode, setViewMode] = useState("month");
@@ -78,9 +82,8 @@ export function ContextWrapper({ children }) {
   return (
     <GlobalContext.Provider
       value={{
-        ...state,
+        savedEvents,
         dispatchCalEvent,
-        dispatch,
         monthIndex,
         setMonthIndex,
         smallCalendarMonth: 0,

@@ -13,6 +13,11 @@ const labelsClasses = [
   "teal",
   "orange",
   "cyan",
+  "lime",
+  "amber",
+  "lightBlue",
+  "lightGreen",
+  "deepOrange",
 ];
 
 export default function TaskModal() {
@@ -23,6 +28,7 @@ export default function TaskModal() {
     selectedEvent,
     savedEvents,
     multiDaySelection,
+    showTaskModal, // Ensure this state is available from context
   } = useContext(GlobalContext);
 
   const [title, setTitle] = useState(
@@ -70,8 +76,10 @@ export default function TaskModal() {
       dispatchCalEvent({ type: "push", payload: taskEvent });
     }
 
-    setShowTaskModal(true);
+    setShowTaskModal(false); // Close the modal after saving
   }
+
+  if (!showTaskModal) return null; // Conditionally render the modal
 
   return (
     <div className="h-screen w-full fixed left-0 top-0 flex justify-center items-center">

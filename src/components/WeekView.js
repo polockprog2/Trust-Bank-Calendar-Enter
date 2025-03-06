@@ -4,9 +4,11 @@ import GlobalContext from "../context/GlobalContext";
 import CalendarEvent from "./CalendarEvent";
 
 export default function WeekView() {
-  const { savedEvents } = useContext(GlobalContext);
+  const { savedEvents, setMultiDaySelection } = useContext(GlobalContext);
   const [startOfWeek, setStartOfWeek] = useState(dayjs().startOf("week"));
   const [weekEvents, setWeekEvents] = useState([]);
+  const [dragging, setDragging] = useState(false);
+  const [selectedDays, setSelectedDays] = useState([]);
 
   useEffect(() => {
     const events = savedEvents.filter(evt => {
@@ -25,6 +27,22 @@ export default function WeekView() {
 
   function handleNextWeek() {
     setStartOfWeek(startOfWeek.add(1, "week"));
+  }
+
+  function handleMouseDown(day) {
+    setDragging(true);
+    setSelectedDays([day]);
+  }
+
+  function handleMouseEnter(day) {
+    if (dragging) {
+      setSelectedDays(prevDays => [...prevDays, day]);
+    }
+  }
+
+  function handleMouseUp() {
+    setDragging(false);
+    setMultiDaySelection(selectedDays);
   }
 
   return (
@@ -46,7 +64,13 @@ export default function WeekView() {
       </header>
       <div className="grid grid-cols-7 gap-4">
         {daysOfWeek.map(day => (
-          <div key={day.format("YYYY-MM-DD")} className="border p-4 rounded-lg shadow-md">
+          <div
+            key={day.format("YYYY-MM-DD")}
+            className={`border p-4 rounded-lg shadow-md ${selectedDays.includes(day) ? 'bg-blue-100' : ''}`}
+            onMouseDown={() => handleMouseDown(day)}
+            onMouseEnter={() => handleMouseEnter(day)}
+            onMouseUp={handleMouseUp}
+          >
             <h3 className="text-xl font-semibold mb-2">{day.format("dddd, MMM D")}</h3>
             <div className="grid grid-rows-24 gap-1">
               {hoursOfDay.map(hour => (
