@@ -1,8 +1,7 @@
-import React, { useState, useReducer, useEffect, useMemo,createContext } from "react";
+import React, { useState, useReducer, useEffect, createContext } from "react";
 import dayjs from "dayjs";
 
-
-const GlobalContext = React.createContext({
+const GlobalContext = createContext({
   monthIndex: 0,
   savedEvents: [],
   setMonthIndex: () => {},
@@ -15,7 +14,7 @@ const GlobalContext = React.createContext({
   showTaskModal: false,
   setShowTaskModal: () => {},
   dispatchCalEvent: () => {},
-  savedEvents: [],
+  dispatchCalTask: () => {},
   selectedEvent: null,
   setSelectedEvent: () => {},
   setLabels: () => {},
@@ -24,8 +23,8 @@ const GlobalContext = React.createContext({
   filteredEvents: [],
   viewMode: "month",
   setViewMode: () => {},
-  multiDaySelection: [], 
-  setMultiDaySelection: () => {}, 
+  multiDaySelection: [],
+  setMultiDaySelection: () => {},
 });
 
 function globalReducer(state, action) {
@@ -48,6 +47,20 @@ function globalReducer(state, action) {
       return state;
   }
 }
+
+function savedTasksReducer(state, { type, payload }) {
+  switch (type) {
+    case "push":
+      return [...state, payload];
+    case "update":
+      return state.map((task) => (task.id === payload.id ? payload : task));
+    case "delete":
+      return state.filter((task) => task.id !== payload.id);
+    default:
+      throw new Error();
+  }
+}
+
 function savedEventsReducer(state, { type, payload }) {
   switch (type) {
     case "push":
@@ -67,46 +80,58 @@ function initEvents() {
   return parsedEvents;
 }
 
-export function ContextWrapper({ children }) {
+function initTasks() {
+  const storageTasks = localStorage.getItem("savedTasks");
+  const parsedTasks = storageTasks ? JSON.parse(storageTasks) : [];
+  return parsedTasks;
+}
+
+export function GlobalProvider({ children }) {
+  const [savedTasks, dispatchCalTask] = useReducer(savedTasksReducer, [], initTasks);
+  const [savedEvents, dispatchCalEvent] = useReducer(savedEventsReducer, [], initEvents);
   const [monthIndex, setMonthIndex] = useState(dayjs().month());
   const [viewMode, setViewMode] = useState("month");
   const [showEventModal, setShowEventModal] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
-  const [savedEvents, dispatchCalEvent] = useReducer(savedEventsReducer, [], initEvents);
-  const [multiDaySelection, setMultiDaySelection] = useState([]); 
-  
+  const [daySelected, setDaySelected] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [labels, setLabels] = useState([]);
+  const [multiDaySelection, setMultiDaySelection] = useState([]);
+
   useEffect(() => {
     localStorage.setItem("savedEvents", JSON.stringify(savedEvents));
   }, [savedEvents]);
 
+  useEffect(() => {
+    localStorage.setItem("savedTasks", JSON.stringify(savedTasks));
+  }, [savedTasks]);
+
   return (
     <GlobalContext.Provider
       value={{
-        savedEvents,
-        dispatchCalEvent,
         monthIndex,
         setMonthIndex,
         smallCalendarMonth: 0,
         setSmallCalendarMonth: () => {},
-        daySelected: null,
-        setDaySelected: () => {},
+        daySelected,
+        setDaySelected,
         showEventModal,
         setShowEventModal,
         showTaskModal,
         setShowTaskModal,
         dispatchCalEvent,
+        dispatchCalTask,
         savedEvents,
-        dispatchCalEvent,
-        selectedEvent: null,
-        setSelectedEvent: () => {},
-        setLabels: () => {},
-        labels: [],
+        selectedEvent,
+        setSelectedEvent,
+        setLabels,
+        labels,
         updateLabel: () => {},
         filteredEvents: [],
         viewMode,
         setViewMode,
-        multiDaySelection, 
-        setMultiDaySelection, 
+        multiDaySelection,
+        setMultiDaySelection,
       }}
     >
       {children}
