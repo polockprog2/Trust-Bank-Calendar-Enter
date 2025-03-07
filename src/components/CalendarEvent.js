@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import dayjs from "dayjs";
 import GlobalContext from "../context/GlobalContext";
 
 export default function CalendarEvent({ event }) {
@@ -13,9 +14,12 @@ export default function CalendarEvent({ event }) {
     setShowEventModal(true);
   }
 
+  const startTime = dayjs(event.startTime).format("h:mm A");
+  const endTime = dayjs(event.endTime).format("h:mm A");
+  
   return (
     <div
-      className={`calendar-event bg-${event.label}-200`}
+      className={`calendar-event border-rounded-200 text-white-200 bg-${event.label}-200 hover:bg-${event.label}-500 cursor-pointer`}
       draggable
       onDragStart={handleDragStart}
       onClick={handleClick}

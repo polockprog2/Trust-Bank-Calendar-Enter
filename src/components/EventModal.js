@@ -13,6 +13,7 @@ const labelsClasses = [
   "teal",
   "orange",
   "cyan",
+  "lime",
 ];
 
 export default function EventModal() {
@@ -118,7 +119,7 @@ export default function EventModal() {
               className="pt-3 border-0 text-gray-600 text-xl font-semibold pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
               onChange={(e) => setTitle(e.target.value)}
             />
-            <span className="material-icons-outlined text-gray-400">
+            <span className="material-icons-outlined text-blue-400">
               schedule
             </span>
             <p>
@@ -126,7 +127,7 @@ export default function EventModal() {
                 ? daySelected.format("dddd, MMMM DD")
                 : multiDaySelection.map(day => day.format("dddd, MMMM DD")).join(", ")}
             </p>
-            <span className="material-icons-outlined text-gray-400">
+            <span className="material-icons-outlined text-blue-400">
               access_time
             </span>
             <div className="flex gap-x-2">
@@ -135,7 +136,7 @@ export default function EventModal() {
                 name="startTime"
                 placeholder="Start time"
                 value={startTime}
-                className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
+                className="pt-3 border-0 text-blue-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
                 onChange={(e) => setStartTime(e.target.value)}
               />
               <input
@@ -143,12 +144,12 @@ export default function EventModal() {
                 name="endTime"
                 placeholder="End time"
                 value={endTime}
-                className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
+                className="pt-3 border-0 text-blue-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
                 onChange={(e) => setEndTime(e.target.value)}
               />
             </div>
             
-            <span className="material-icons-outlined text-gray-400">
+            <span className="material-icons-outlined text-blue-400">
               segment
             </span>
             <input
@@ -160,7 +161,7 @@ export default function EventModal() {
               className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
               onChange={(e) => setDescription(e.target.value)}
             />
-            <span className="material-icons-outlined text-gray-400">
+            <span className="material-icons-outlined text-blue-400">
               location_on
             </span>
             <input
@@ -171,7 +172,7 @@ export default function EventModal() {
               className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
               onChange={(e) => setLocation(e.target.value)}
             />
-            <span className="material-icons-outlined text-gray-400">
+            <span className="material-icons-outlined text-blue-400">
               email
             </span>
             <input
@@ -182,7 +183,7 @@ export default function EventModal() {
               className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
               onChange={(e) => setEmail(e.target.value)}
             />
-            <span className="material-icons-outlined text-gray-400">
+            <span className="material-icons-outlined text-blue-400">
               bookmark_border
             </span>
             <div className="flex gap-x-2">

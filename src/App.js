@@ -9,11 +9,13 @@ import DayView from "./components/DayView";
 import YearView from "./components/YearView";
 import GlobalContext from "./context/GlobalContext";
 import EventModal from "./components/EventModal";
+import TaskModal from "./components/TaskModal";
+
 
 
 function App() {
   const [currentMonth, setCurrentMonth] = useState(getMonth());
-  const { monthIndex, showEventModal, viewMode, } = useContext(GlobalContext);
+  const { monthIndex, showEventModal, showTaskModal,viewMode, } = useContext(GlobalContext);
   
   useEffect(() => {
     setCurrentMonth(getMonth(monthIndex));
@@ -22,7 +24,8 @@ function App() {
   return (
     <React.Fragment>
       {showEventModal && <EventModal />}
-
+      {showTaskModal && <TaskModal />}
+      
       <div className="h-screen flex flex-col">
         <CalendarHeader />
         <div className="flex flex-1">

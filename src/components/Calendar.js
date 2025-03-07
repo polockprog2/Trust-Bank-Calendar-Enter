@@ -24,7 +24,7 @@ export default function Day({ day, rowIdx }) {
 
   function getCurrentDayClass() {
     return day.format("DD-MM-YY") === dayjs().format("DD-MM-YY")
-      ? "bg-Greens-600 text-white rounded-full w-7"
+      ? "bg-blue-600 text-white rounded-full w-7"
       : "";
   }
 
@@ -55,7 +55,7 @@ export default function Day({ day, rowIdx }) {
   function handleDrop(e) {
     e.preventDefault();
     const eventData = JSON.parse(e.dataTransfer.getData("text/plain"));
-    eventData.day = day.valueOf(); // Update the day of the event
+    eventData.day = day.valueOf(); 
     dispatchCalEvent({ type: "update", payload: eventData });
   }
 

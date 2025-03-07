@@ -1,6 +1,9 @@
 import React, { useContext, useState } from "react";
 import GlobalContext from "../context/GlobalContext";
 
+const priorityClasses = ["low", "medium", "high"];
+const statusClasses = ["todo", "in-progress", "done"];
+
 const labelsClasses = [
   "indigo",
   "gray",
@@ -13,89 +16,79 @@ const labelsClasses = [
   "teal",
   "orange",
   "cyan",
+  "lime",
 ];
 
 export default function TaskModal() {
   const {
     setShowTaskModal,
     daySelected,
-    dispatchCalEvent,
-    selectedEvent,
-    savedEvents,
-    multiDaySelection,
+    dispatchCalTask,
+    selectedTask,
+    showTaskModal,
   } = useContext(GlobalContext);
 
-  const [title, setTitle] = useState(
-    selectedEvent ? selectedEvent.title : ""
-  );
+  const [title, setTitle] = useState(selectedTask ? selectedTask.title : "");
   const [description, setDescription] = useState(
-    selectedEvent ? selectedEvent.description : ""
+    selectedTask ? selectedTask.description : ""
   );
-  const [location, setLocation] = useState(
-    selectedEvent ? selectedEvent.location : ""
+  const [dueDate, setDueDate] = useState(
+    selectedTask ? selectedTask.dueDate : daySelected.format("YYYY-MM-DD")
   );
-  const [selectedLabel, setSelectedLabel] = useState(
-    selectedEvent
-      ? labelsClasses.find((lbl) => lbl === selectedEvent.label)
-      : labelsClasses[0]
+  const [priority, setPriority] = useState(
+    selectedTask ? selectedTask.priority : priorityClasses[0]
   );
-  const [reminder, setReminder] = useState(""); 
-  const [startTime, setStartTime] = useState(
-    selectedEvent ? selectedEvent.startTime : ""
-  );
-  const [endTime, setEndTime] = useState(
-    selectedEvent ? selectedEvent.endTime : ""
-  );
-  const [email, setEmail] = useState(
-    selectedEvent ? selectedEvent.email : ""
+  const [status, setStatus] = useState(
+    selectedTask ? selectedTask.status : statusClasses[0]
   );
 
   function handleSubmit(e) {
     e.preventDefault();
-    const taskEvent = {
+    const task = {
       title,
       description,
-      location,
-      email,
-      label: selectedLabel,
-      day: daySelected ? daySelected.valueOf() : multiDaySelection.map(day => day.valueOf()),
-      id: selectedEvent ? selectedEvent.id : Date.now(),
-      reminder,
-      startTime,
-      endTime,
+      dueDate,
+      priority,
+      status,
+      id: selectedTask ? selectedTask.id : Date.now(),
     };
-    if (selectedEvent) {
-      dispatchCalEvent({ type: "update", payload: taskEvent });
+    if (selectedTask) {
+      dispatchCalTask({ type: "update", payload: task });
     } else {
-      dispatchCalEvent({ type: "push", payload: taskEvent });
+      dispatchCalTask({ type: "push", payload: task });
     }
-
-    setShowTaskModal(true);
+    setShowTaskModal(false);
   }
+
+  function handleDelete() {
+    if (selectedTask) {
+      dispatchCalTask({
+        type: "delete",
+        payload: selectedTask,
+      });
+      setShowTaskModal(false);
+    }
+  }
+
+  if (!showTaskModal) return null;
 
   return (
     <div className="h-screen w-full fixed left-0 top-0 flex justify-center items-center">
-      <form className="bg-white rounded-lg shadow-2xl w-1/4">
+      <form className="bg-white rounded-lg shadow-2xl w-1/3" onSubmit={handleSubmit}>
         <header className="bg-gray-100 px-4 py-2 flex justify-between items-center">
           <span className="material-icons-outlined text-gray-400">
             drag_handle
           </span>
           <div>
-            {selectedEvent && (
+            {selectedTask && (
               <span
-                onClick={() => {
-                  dispatchCalEvent({
-                    type: "delete",
-                    payload: selectedEvent,
-                  });
-                  setShowTaskModal(false);
-                }}
+                onClick={handleDelete}
                 className="material-icons-outlined text-gray-400 cursor-pointer"
               >
                 delete
               </span>
             )}
-            <button onClick={() => setShowTaskModal(false)}>
+            <button type="button" onClick={() => setShowTaskModal(false)}>
               <span className="material-icons-outlined text-gray-400">
                 close
               </span>
@@ -114,80 +107,38 @@ export default function TaskModal() {
               className="pt-3 border-0 text-gray-600 text-xl font-semibold pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
               onChange={(e) => setTitle(e.target.value)}
             />
-            <span className="material-icons-outlined text-gray-400">
-              schedule
-            </span>
-            <p>
-              {daySelected
-                ? daySelected.format("dddd, MMMM DD")
-                : multiDaySelection.map(day => day.format("dddd, MMMM DD")).join(", ")}
-            </p>
-            <span className="material-icons-outlined text-gray-400">
-              access_time
-            </span>
-            <div className="flex gap-x-2">
-              <input
-                type="time"
-                name="startTime"
-                placeholder="Start time"
-                value={startTime}
-                className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
-                onChange={(e) => setStartTime(e.target.value)}
-              />
-              <input
-                type="time"
-                name="endTime"
-                placeholder="End time"
-                value={endTime}
-                className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
-                onChange={(e) => setEndTime(e.target.value)}
-              />
-            </div>
-            <span className="material-icons-outlined text-gray-400">
-              segment
+            <span className="material-icons-outlined text-blue-400">
+              description
             </span>
             <input
               type="text"
               name="description"
               placeholder="Add a description"
               value={description}
-              required
               className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
               onChange={(e) => setDescription(e.target.value)}
             />
-            <span className="material-icons-outlined text-gray-400">
-              location_on
+            <span className="material-icons-outlined text-blue-400">
+              event
             </span>
             <input
-              type="text"
-              name="location"
-              placeholder="Add location"
-              value={location}
+              type="date"
+              name="dueDate"
+              value={dueDate}
               className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
-              onChange={(e) => setLocation(e.target.value)}
+              onChange={(e) => setDueDate(e.target.value)}
             />
-            <span className="material-icons-outlined text-gray-400">
-              email
-            </span>
-            <input
-              type="email"
-              name="email"
-              placeholder="Add email"
-              value={email}
-              className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <span className="material-icons-outlined text-gray-400">
-              bookmark_border
+            <span className="material-icons-outlined text-blue-400">
+              priority_high
             </span>
             <div className="flex gap-x-2">
-              {labelsClasses.map((lblClass, i) => (
+              {priorityClasses.map((prClass, i) => (
                 <span
                   key={i}
-                  onClick={() => setSelectedLabel(lblClass)}
-                  className={`bg-${lblClass}-500 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer`}
+                  onClick={() => setPriority(prClass)}
+                  className={`bg-${prClass}-500 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer`}
                 >
-                  {selectedLabel === lblClass && (
+                  {priority === prClass && (
                     <span className="material-icons-outlined text-white text-sm">
                       check
                     </span>
@@ -195,21 +146,29 @@ export default function TaskModal() {
                 </span>
               ))}
             </div>
-            <div className="mt-4">
-              <label className="block text-gray-700">Reminder</label>
-              <input
-                type="datetime-local"
-                value={reminder}
-                onChange={(e) => setReminder(e.target.value)}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-              />
+            <span className="material-icons-outlined text-blue-400">
+              list_alt
+            </span>
+            <div className="flex gap-x-2">
+              {statusClasses.map((stClass, i) => (
+                <span
+                  key={i}
+                  onClick={() => setStatus(stClass)}
+                  className={`bg-${stClass}-500 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer`}
+                >
+                  {status === stClass && (
+                    <span className="material-icons-outlined text-white text-sm">
+                      check
+                    </span>
+                  )}
+                </span>
+              ))}
             </div>
           </div>
         </div>
         <footer className="flex justify-end border-t p-3 mt-5">
           <button
             type="submit"
-            onClick={handleSubmit}
             className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded text-white"
           >
             Save

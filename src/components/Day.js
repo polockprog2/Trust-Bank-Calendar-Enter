@@ -49,10 +49,21 @@ export default function Day({ day, rowIdx }) {
     }
   }
 
+  function handleMouseEnter() {
+    if (multiDaySelection.length > 0) {
+      setMultiDaySelection((prev) => {
+        if (!prev.some((d) => d.isSame(day, "day"))) {
+          return [...prev, day];
+        }
+        return prev;
+      });
+    }
+  }
+
   function handleDrop(e) {
     e.preventDefault();
     const eventData = JSON.parse(e.dataTransfer.getData("text/plain"));
-    eventData.day = day.valueOf(); // Update the day of the event
+    eventData.day = day.valueOf(); 
     dispatchCalEvent({ type: "update", payload: eventData });
   }
 
@@ -65,6 +76,7 @@ export default function Day({ day, rowIdx }) {
       className="border border-gray-200 flex flex-col"
       onMouseDown={handleDayMouseDown}
       onMouseUp={handleDayMouseUp}
+      onMouseEnter={handleMouseEnter}
       onClick={handleDayClick}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
@@ -76,7 +88,7 @@ export default function Day({ day, rowIdx }) {
           </p>
         )}
         <p
-          className={`text-sm p-1 my-1 text-center  ${getCurrentDayClass()}`}
+          className={`text-sm p-1 my-1 text-center ${getCurrentDayClass()}`}
         >
           {day.format("DD")}
         </p>
