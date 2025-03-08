@@ -29,7 +29,7 @@ export default function CreateEventButton() {
         <span className="pl-3 pr-7"> Create</span>
       </button>
       {isOpen && (
-        <div className="bg-blue-300 shadow-lg rounded-md  ">
+        <div className="bg-blue-300 shadow-lg rounded-md">
           <button
             onClick={handleCreateEvent}
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

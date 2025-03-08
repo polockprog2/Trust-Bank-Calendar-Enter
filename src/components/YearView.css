@@ -1,0 +1,12 @@
+/* Add this to your main CSS file */
+.container {
+    display: flex;
+  }
+  
+  .sidebar {
+    width: 250px; /* Adjust the width as needed */
+  }
+  
+  .main-content {
+    flex: 1;
+  }

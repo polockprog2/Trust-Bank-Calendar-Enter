@@ -3,25 +3,25 @@ import React, { useContext, useState, useEffect } from "react";
 import GlobalContext from "../context/GlobalContext";
 import CalendarEvent from "./CalendarEvent";
 
-export default function Day({ day, rowIdx }) {
+export default function Day({ day, rowIdx, events, tasks }) {
   const [dayEvents, setDayEvents] = useState([]);
+  const [dayTasks, setDayTasks] = useState([]);
   const {
     setDaySelected,
     setShowEventModal,
-    filteredEvents,
+    setShowTaskModal,
     setSelectedEvent,
+    setSelectedTask,
     multiDaySelection,
     setMultiDaySelection,
     dispatchCalEvent,
+    dispatchCalTask,
   } = useContext(GlobalContext);
 
   useEffect(() => {
-    const events = filteredEvents.filter(
-      (evt) =>
-        dayjs(evt.day).format("DD-MM-YY") === day.format("DD-MM-YY")
-    );
     setDayEvents(events);
-  }, [filteredEvents, day]);
+    setDayTasks(tasks);
+  }, [events, tasks]);
 
   function getCurrentDayClass() {
     return day.format("DD-MM-YY") === dayjs().format("DD-MM-YY")
@@ -37,6 +37,11 @@ export default function Day({ day, rowIdx }) {
   function handleEventClick(event) {
     setSelectedEvent(event);
     setShowEventModal(true);
+  }
+
+  function handleTaskClick(task) {
+    setSelectedTask(task);
+    setShowTaskModal(true);
   }
 
   function handleDayMouseDown() {
@@ -63,8 +68,13 @@ export default function Day({ day, rowIdx }) {
   function handleDrop(e) {
     e.preventDefault();
     const eventData = JSON.parse(e.dataTransfer.getData("text/plain"));
-    eventData.day = day.valueOf(); 
-    dispatchCalEvent({ type: "update", payload: eventData });
+    if (eventData.type === "event") {
+      eventData.day = day.valueOf();
+      dispatchCalEvent({ type: "update", payload: eventData });
+    } else if (eventData.type === "task") {
+      eventData.dueDate = day.valueOf();
+      dispatchCalTask({ type: "update", payload: eventData });
+    }
   }
 
   function handleDragOver(e) {
@@ -77,9 +87,9 @@ export default function Day({ day, rowIdx }) {
       onMouseDown={handleDayMouseDown}
       onMouseUp={handleDayMouseUp}
       onMouseEnter={handleMouseEnter}
-      onClick={handleDayClick}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
+      onClick={handleDayClick} // Add this line to handle day click
     >
       <header className="flex flex-col items-center">
         {rowIdx === 0 && (
@@ -95,7 +105,30 @@ export default function Day({ day, rowIdx }) {
       </header>
       <div className="flex-1 cursor-pointer">
         {dayEvents.map((evt, idx) => (
-          <CalendarEvent key={idx} event={evt} />
+          <div
+            key={idx}
+            className={`bg-${evt.label}-200 p-1 mr-3 text-gray-600 text-sm rounded mb-1 truncate`}
+            onClick={() => handleEventClick(evt)}
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("text/plain", JSON.stringify({ ...evt, type: "event" }));
+            }}
+          >
+            {evt.title}
+          </div>
+        ))}
+        {dayTasks.map((task, idx) => (
+          <div
+            key={idx}
+            className={`bg-${task.label}-200 p-1 mr-3 text-gray-600 text-sm rounded mb-1 truncate`}
+            onClick={() => handleTaskClick(task)}
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.setData("text/plain", JSON.stringify({ ...task, type: "task" }));
+            }}
+          >
+            {task.title}
+          </div>
         ))}
       </div>
     </div>

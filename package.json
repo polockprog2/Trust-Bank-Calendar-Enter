@@ -1,5 +1,5 @@
 {
-  "name": "google-calendar-clone",
+  "name": "Trust Bank",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -22,6 +22,7 @@
     "react-dom": "^18.2.0",
     "react-icons": "^5.5.0",
     "react-scripts": "5.0.1",
+    "vite": "^6.2.1",
     "web-vitals": "^3.4.0"
   },
   "scripts": {

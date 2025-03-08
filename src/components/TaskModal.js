@@ -5,18 +5,20 @@ const priorityClasses = ["low", "medium", "high"];
 const statusClasses = ["todo", "in-progress", "done"];
 
 const labelsClasses = [
-  "indigo",
-  "gray",
-  "green",
-  "blue",
-  "red",
-  "purple",
-  "yellow",
-  "pink",
-  "teal",
+  
   "orange",
   "cyan",
   "lime",
+  "pink",
+  "purple",
+  "amber",
+  "navy",
+  "maroon",
+  "olive",
+  "coral",
+  "salmon",
+  "turquoise",
+ 
 ];
 
 export default function TaskModal() {
@@ -25,6 +27,7 @@ export default function TaskModal() {
     daySelected,
     dispatchCalTask,
     selectedTask,
+    setSelectedTask, // Use setSelectedTask
     showTaskModal,
   } = useContext(GlobalContext);
 
@@ -41,6 +44,11 @@ export default function TaskModal() {
   const [status, setStatus] = useState(
     selectedTask ? selectedTask.status : statusClasses[0]
   );
+  const [selectedLabel, setSelectedLabel] = useState(
+    selectedTask
+      ? labelsClasses.find((lbl) => lbl === selectedTask.label)
+      : labelsClasses[0]
+  );
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -50,6 +58,7 @@ export default function TaskModal() {
       dueDate,
       priority,
       status,
+      label: selectedLabel, // Add label to task
       id: selectedTask ? selectedTask.id : Date.now(),
     };
     if (selectedTask) {
@@ -58,6 +67,7 @@ export default function TaskModal() {
       dispatchCalTask({ type: "push", payload: task });
     }
     setShowTaskModal(false);
+    setSelectedTask(null); // Reset selectedTask
   }
 
   function handleDelete() {
@@ -67,6 +77,7 @@ export default function TaskModal() {
         payload: selectedTask,
       });
       setShowTaskModal(false);
+      setSelectedTask(null); // Reset selectedTask
     }
   }
 
@@ -157,6 +168,24 @@ export default function TaskModal() {
                   className={`bg-${stClass}-500 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer`}
                 >
                   {status === stClass && (
+                    <span className="material-icons-outlined text-white text-sm">
+                      check
+                    </span>
+                  )}
+                </span>
+              ))}
+            </div>
+            <span className="material-icons-outlined text-blue-400">
+              bookmark_border
+            </span>
+            <div className="flex gap-x-2">
+              {labelsClasses.map((lblClass, i) => (
+                <span
+                  key={i}
+                  onClick={() => setSelectedLabel(lblClass)}
+                  className={`bg-${lblClass}-500 w-6 h-6 rounded-full flex items-center justify-center cursor-pointer`}
+                >
+                  {selectedLabel === lblClass && (
                     <span className="material-icons-outlined text-white text-sm">
                       check
                     </span>

@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import dayjs from "dayjs";
 import GlobalContext from "../context/GlobalContext";
+import  "./YearView.css";
 
 export default function YearView() {
   const { savedEvents } = useContext(GlobalContext);
@@ -11,7 +12,7 @@ export default function YearView() {
   );
 
   return (
-    <div className="p-4">
+    <div className="flex flex-col p-4 w-full">
       <h2 className="text-2xl font-bold mb-4 text-center">Year View - {currentYear}</h2>
       <div className="grid grid-cols-3 gap-4">
         {monthsOfYear.map((month) => (

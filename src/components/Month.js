@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import dayjs from "dayjs";
 import Day from "./Day";
+import GlobalContext from "../context/GlobalContext";
 
 export default function Month({ month }) {
   const [selectedDays, setSelectedDays] = useState([]);
   const [dragging, setDragging] = useState(false);
+  const { filteredEvents, filteredTasks } = useContext(GlobalContext);
 
   function handleMouseDown(day) {
     setDragging(true);
@@ -40,6 +43,12 @@ export default function Month({ month }) {
               onMouseDown={() => handleMouseDown(day)}
               onMouseEnter={() => handleMouseEnter(day)}
               isSelected={selectedDays.includes(day)}
+              events={filteredEvents.filter(
+                (evt) => dayjs(evt.day).format("DD-MM-YY") === day.format("DD-MM-YY")
+              )}
+              tasks={filteredTasks.filter(
+                (task) => dayjs(task.dueDate).format("DD-MM-YY") === day.format("DD-MM-YY")
+              )}
             />
           ))}
         </React.Fragment>

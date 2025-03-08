@@ -1,54 +1,9 @@
-import React, { useState, useReducer, useEffect, createContext } from "react";
+import React, { useState, useReducer, useEffect, createContext, useMemo } from "react";
 import dayjs from "dayjs";
 
-const GlobalContext = createContext({
-  monthIndex: 0,
-  savedEvents: [],
-  setMonthIndex: () => {},
-  smallCalendarMonth: 0,
-  setSmallCalendarMonth: () => {},
-  daySelected: null,
-  setDaySelected: () => {},
-  showEventModal: false,
-  setShowEventModal: () => {},
-  showTaskModal: false,
-  setShowTaskModal: () => {},
-  dispatchCalEvent: () => {},
-  dispatchCalTask: () => {},
-  selectedEvent: null,
-  setSelectedEvent: () => {},
-  setLabels: () => {},
-  labels: [],
-  updateLabel: () => {},
-  filteredEvents: [],
-  viewMode: "month",
-  setViewMode: () => {},
-  multiDaySelection: [],
-  setMultiDaySelection: () => {},
-});
+const GlobalContext = createContext();
 
-function globalReducer(state, action) {
-  switch (action.type) {
-    case "update":
-      return {
-        ...state,
-        savedEvents: state.savedEvents.map((event) =>
-          event.id === action.payload.id ? action.payload : event
-        ),
-      };
-    case "delete":
-      return {
-        ...state,
-        savedEvents: state.savedEvents.filter(
-          (event) => event.id !== action.payload.id
-        ),
-      };
-    default:
-      return state;
-  }
-}
-
-function savedTasksReducer(state, { type, payload }) {
+const savedTasksReducer = (state, { type, payload }) => {
   switch (type) {
     case "push":
       return [...state, payload];
@@ -59,9 +14,9 @@ function savedTasksReducer(state, { type, payload }) {
     default:
       throw new Error();
   }
-}
+};
 
-function savedEventsReducer(state, { type, payload }) {
+const savedEventsReducer = (state, { type, payload }) => {
   switch (type) {
     case "push":
       return [...state, payload];
@@ -72,21 +27,21 @@ function savedEventsReducer(state, { type, payload }) {
     default:
       throw new Error();
   }
-}
+};
 
-function initEvents() {
+const initEvents = () => {
   const storageEvents = localStorage.getItem("savedEvents");
   const parsedEvents = storageEvents ? JSON.parse(storageEvents) : [];
   return parsedEvents;
-}
+};
 
-function initTasks() {
+const initTasks = () => {
   const storageTasks = localStorage.getItem("savedTasks");
   const parsedTasks = storageTasks ? JSON.parse(storageTasks) : [];
   return parsedTasks;
-}
+};
 
-export function GlobalProvider({ children }) {
+export const GlobalProvider = ({ children }) => {
   const [savedTasks, dispatchCalTask] = useReducer(savedTasksReducer, [], initTasks);
   const [savedEvents, dispatchCalEvent] = useReducer(savedEventsReducer, [], initEvents);
   const [monthIndex, setMonthIndex] = useState(dayjs().month());
@@ -95,7 +50,9 @@ export function GlobalProvider({ children }) {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [daySelected, setDaySelected] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null); // Add selectedTask state
   const [labels, setLabels] = useState([]);
+  const [taskLabels, setTaskLabels] = useState([]);
   const [multiDaySelection, setMultiDaySelection] = useState([]);
 
   useEffect(() => {
@@ -105,6 +62,56 @@ export function GlobalProvider({ children }) {
   useEffect(() => {
     localStorage.setItem("savedTasks", JSON.stringify(savedTasks));
   }, [savedTasks]);
+
+  useEffect(() => {
+    setLabels((prevLabels) => {
+      return [...new Set(savedEvents.map((evt) => evt.label))].map((label) => {
+        const currentLabel = prevLabels.find((lbl) => lbl.label === label);
+        return {
+          label,
+          checked: currentLabel ? currentLabel.checked : true,
+        };
+      });
+    });
+  }, [savedEvents]);
+
+  useEffect(() => {
+    setTaskLabels((prevLabels) => {
+      return [...new Set(savedTasks.map((task) => task.label))].map((label) => {
+        const currentLabel = prevLabels.find((lbl) => lbl.label === label);
+        return {
+          label,
+          checked: currentLabel ? currentLabel.checked : true,
+        };
+      });
+    });
+  }, [savedTasks]);
+
+  const filteredEvents = useMemo(() => {
+    return savedEvents.filter((evt) =>
+      labels
+        .filter((lbl) => lbl.checked)
+        .map((lbl) => lbl.label)
+        .includes(evt.label)
+    );
+  }, [savedEvents, labels]);
+
+  const filteredTasks = useMemo(() => {
+    return savedTasks.filter((task) =>
+      taskLabels
+        .filter((lbl) => lbl.checked)
+        .map((lbl) => lbl.label)
+        .includes(task.label)
+    );
+  }, [savedTasks, taskLabels]);
+
+  const updateLabel = (label) => {
+    setLabels(labels.map((lbl) => (lbl.label === label.label ? label : lbl)));
+  };
+
+  const updateTaskLabel = (label) => {
+    setTaskLabels(taskLabels.map((lbl) => (lbl.label === label.label ? label : lbl)));
+  };
 
   return (
     <GlobalContext.Provider
@@ -122,12 +129,18 @@ export function GlobalProvider({ children }) {
         dispatchCalEvent,
         dispatchCalTask,
         savedEvents,
+        savedTasks,
         selectedEvent,
         setSelectedEvent,
+        selectedTask, // Provide selectedTask
+        setSelectedTask, // Provide setSelectedTask
         setLabels,
         labels,
-        updateLabel: () => {},
-        filteredEvents: [],
+        taskLabels,
+        updateLabel,
+        updateTaskLabel,
+        filteredEvents,
+        filteredTasks,
         viewMode,
         setViewMode,
         multiDaySelection,
@@ -137,6 +150,6 @@ export function GlobalProvider({ children }) {
       {children}
     </GlobalContext.Provider>
   );
-}
+};
 
 export default GlobalContext;

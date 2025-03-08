@@ -11,9 +11,7 @@ const labelsClasses = [
   "yellow",
   "pink",
   "teal",
-  "orange",
-  "cyan",
-  "lime",
+  
 ];
 
 export default function EventModal() {
