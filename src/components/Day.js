@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import React, { useContext, useState, useEffect } from "react";
 import GlobalContext from "../context/GlobalContext";
-import CalendarEvent from "./CalendarEvent";
+
 
 export default function Day({ day, rowIdx, events, tasks }) {
   const [dayEvents, setDayEvents] = useState([]);
@@ -107,7 +107,7 @@ export default function Day({ day, rowIdx, events, tasks }) {
         {dayEvents.map((evt, idx) => (
           <div
             key={idx}
-            className={`bg-${evt.label}-200 p-1 mr-3 text-gray-600 text-sm rounded mb-1 truncate`}
+            className={`bg-${evt.label}-500 p-1 mr-3 text-black-600 text-sm rounded mb-1 truncate`}
             onClick={() => handleEventClick(evt)}
             draggable
             onDragStart={(e) => {
@@ -120,7 +120,7 @@ export default function Day({ day, rowIdx, events, tasks }) {
         {dayTasks.map((task, idx) => (
           <div
             key={idx}
-            className={`bg-${task.label}-200 p-1 mr-3 text-gray-600 text-sm rounded mb-1 truncate`}
+            className={`bg-${task.label}-500 p-1 mr-3 text-black-200 text-sm rounded mb-1 truncate`}
             onClick={() => handleTaskClick(task)}
             draggable
             onDragStart={(e) => {

@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import "./App.css";
+import dayjs from "dayjs";
 import { getMonth } from "./util";
 import CalendarHeader from "./components/CalendarHeader";
 import Sidebar from "./components/Sidebar";
@@ -33,7 +34,7 @@ function App() {
           {viewMode === "month" && <Month month={currentMonth} />}
           {viewMode === "week" && <WeekView />}
           {viewMode === "day" && <DayView />}
-          {viewMode === "Year" && <YearView />}
+          {viewMode === "Year" && <YearView year = {dayjs().year()} />}
         </div>
       </div>
     </React.Fragment>

@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import React, { useContext, useState, useEffect } from "react";
 import GlobalContext from "../context/GlobalContext";
 import CalendarEvent from "./CalendarEvent";
+import "../assets/styles.css";
 
 export default function Day({ day, rowIdx }) {
   const [dayEvents, setDayEvents] = useState([]);
@@ -64,8 +65,9 @@ export default function Day({ day, rowIdx }) {
   }
 
   return (
+    <div className="Calendar Container">
     <div
-      className="border border-gray-200 flex flex-col"
+      className="border border-gray-200 flex flex-col rounded-lg"
       onMouseDown={handleDayMouseDown}
       onMouseUp={handleDayMouseUp}
       onClick={handleDayClick}
@@ -74,7 +76,7 @@ export default function Day({ day, rowIdx }) {
     >
       <header className="flex flex-col items-center">
         {rowIdx === 0 && (
-          <p className="text-sm mt-1">
+          <p className="text-xs mt-1">
             {day.format("ddd").toUpperCase()}
           </p>
         )}
@@ -89,6 +91,7 @@ export default function Day({ day, rowIdx }) {
           <CalendarEvent key={idx} event={evt} />
         ))}
       </div>
+    </div>
     </div>
   );
 }

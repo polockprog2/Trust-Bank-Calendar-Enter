@@ -19,7 +19,7 @@ export default function CalendarEvent({ event }) {
   
   return (
     <div
-      className={`calendar-event border-rounded-200 text-white-200 bg-${event.label}-200 hover:bg-${event.label}-500 cursor-pointer`}
+      className={`calendar-event border-rounded-500 text-blue-500 bg-${event.label}-500 hover:bg-${event.label}-500 cursor-pointer`}
       draggable
       onDragStart={handleDragStart}
       onClick={handleClick}

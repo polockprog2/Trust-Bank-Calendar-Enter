@@ -1,43 +1,19 @@
-import React, { useContext } from "react";
+import React from "react";
 import dayjs from "dayjs";
-import GlobalContext from "../context/GlobalContext";
-import  "./YearView.css";
+import Month from "./Month";
+import "../components/YearView.css";
 
-export default function YearView() {
-  const { savedEvents } = useContext(GlobalContext);
-  const currentYear = dayjs().year();
-
-  const monthsOfYear = Array.from({ length: 12 }, (_, i) =>
-    dayjs().year(currentYear).month(i).startOf("month")
-  );
+export default function YearView({ year }) {
+  const months = Array.from({ length: 12 }, (_, i) => dayjs(new Date(year, i, 1)));
 
   return (
-    <div className="flex flex-col p-4 w-full">
-      <h2 className="text-2xl font-bold mb-4 text-center">Year View - {currentYear}</h2>
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">{year}</h2>
       <div className="grid grid-cols-3 gap-4">
-        {monthsOfYear.map((month) => (
-          <div key={month.format("YYYY-MM")} className="border p-4 rounded-lg shadow-md">
-            <h3 className="text-lg font-semibold mb-2 text-center">{month.format("MMMM YYYY")}</h3>
-            <div className="grid grid-cols-7 gap-1 text-xs">
-              {Array.from({ length: month.daysInMonth() }, (_, i) =>
-                month.date(i + 1)
-              ).map((day) => (
-                <div key={day.format("YYYY-MM-DD")} className="border p-1 rounded text-center">
-                  <span className="block font-medium">{day.format("D")}</span>
-                  <ul className="list-none p-0">
-                    {savedEvents
-                      .filter((event) => dayjs(event.day).isSame(day, "day"))
-                      .map((event) => (
-                        <li key={event.id} className="mt-1">
-                          <span className="text-white text-xs px-1 py-0.5 rounded bg-blue-500">
-                            {event.title}
-                          </span>
-                        </li>
-                      ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+        {months.map((month, idx) => (
+          <div key={idx} className="border rounded-lg p-2">
+            <h3 className="text-xl font-semibold mb-2">{month.format("MMMM")}</h3>
+            <Month month={month} />
           </div>
         ))}
       </div>

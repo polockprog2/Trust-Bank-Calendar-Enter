@@ -12,12 +12,12 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="border-rounded p-6 w-80">
+    <aside className="border-rounded p-6 w-80 shadow-md bg-white">
       <CreateEventButton />
       <SmallCalendar />
       <input
         type="text"
-        className="border-rounded p-1 w-full mb-4"
+        className="border p-1 w-3/4 mb-4 bg-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-300"
         placeholder="Search..."
         value={searchQuery}
         onChange={handleSearchChange}

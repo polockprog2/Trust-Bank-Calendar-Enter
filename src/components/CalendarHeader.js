@@ -2,20 +2,24 @@ import dayjs from "dayjs";
 import React, { useContext } from "react";
 import logo from "../assets/trust.png";
 import GlobalContext from "../context/GlobalContext";
-import ViewSwitcherDropdown from "./ViewSwitcherDrodown";
+import ViewSwitcherDrodown from "./ViewSwitcherDrodown";
 
 export default function CalendarHeader() {
-  const { monthIndex, setMonthIndex, viewMode } = useContext(GlobalContext);
+  const { monthIndex, setMonthIndex, viewMode, setViewMode } = useContext(GlobalContext);
 
   function handlePrev() {
     if (viewMode === "month") {
       setMonthIndex(monthIndex - 1);
+    } else if (viewMode === "year") {
+      setMonthIndex(monthIndex - 12);
     }
   }
 
   function handleNext() {
     if (viewMode === "month") {
       setMonthIndex(monthIndex + 1);
+    } else if (viewMode === "year") {
+      setMonthIndex(monthIndex + 12);
     }
   }
 
@@ -28,7 +32,7 @@ export default function CalendarHeader() {
   return (
     <header className="px-4 py-2 flex items-center">
       <img src={logo} alt="calendar" className="mr-2 w-12 h-12" />
-      <h1 className="mr-10 text-xl text-gray-500 font-bold">trust calendar</h1>
+      <h1 className="mr-10 text-xl text-gray-500 font-bold">Trust Bank PLC</h1>
       
       <button onClick={handleReset} className="border rounded bg-white-500 text-white-200 py-3 px-6 mr-5 hover:bg-gray-200">
         Today
@@ -46,11 +50,12 @@ export default function CalendarHeader() {
       </button>
       
       <h2 className="ml-4 text-xl text-gray-500 font-bold">
-        {dayjs(new Date(dayjs().year(), monthIndex)).format("MMMM YYYY")}
+        {viewMode === "month" && dayjs(new Date(dayjs().year(), monthIndex)).format("MMMM YYYY")}
+        {viewMode === "year" && dayjs(new Date(dayjs().year(), monthIndex)).format("YYYY")}
       </h2>
       
-      <div className="ml-auto flex space-x-2">
-        <ViewSwitcherDropdown />
+      <div className="ml-auto flex space-x-2 items-center">
+        <ViewSwitcherDrodown />
       </div>
     </header>
   );
