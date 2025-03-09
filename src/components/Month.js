@@ -26,6 +26,7 @@ export default function Month({ month }) {
 
   function handleMouseUp() {
     setDragging(false);
+    console.log("Selected Days:", selectedDays);
   }
 
   return (

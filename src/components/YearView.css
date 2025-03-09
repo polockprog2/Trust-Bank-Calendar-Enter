@@ -1,6 +1,6 @@
 /* Add this to your main CSS file */
 .container {
-    display: flex;
+    display: absolute;
   }
   
   .sidebar {

@@ -14,6 +14,7 @@
     "@types/react-icons": "^2.2.7",
     "axios": "^1.8.1",
     "dayjs": "^1.11.13",
+    "daypilot-pro-react": "^0.0.0",
     "react": "^18.2.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-big-calendar": "^1.18.0",

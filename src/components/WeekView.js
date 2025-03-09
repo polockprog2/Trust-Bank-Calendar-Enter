@@ -10,7 +10,6 @@ export default function WeekView() {
   const [dragging, setDragging] = useState(false);
   const [selectedDays, setSelectedDays] = useState([]);
 
-  
   useEffect(() => {
     const events = savedEvents.filter(evt => {
       const eventDate = dayjs(evt.day);
@@ -67,19 +66,19 @@ export default function WeekView() {
         {daysOfWeek.map(day => (
           <div
             key={day.format("YYYY-MM-DD")}
-            className={`border p-4 rounded-lg shadow-md ${selectedDays.includes(day) ? 'bg-blue-100' : ''}`}
+            className={`border p-4 rounded-lg shadow-md ${selectedDays.includes(day) ? 'bg-blue-500' : ''}`}
             onMouseDown={() => handleMouseDown(day)}
             onMouseEnter={() => handleMouseEnter(day)}
             onMouseUp={handleMouseUp}
           >
             <h3 className="text-xl font-semibold mb-2">{day.format("dddd, MMM D")}</h3>
-            <div className="grid grid-rows-24 gap-1">
+            <div className="grid-rows-24 gap-0">
               {hoursOfDay.map(hour => (
                 <div key={hour} className="border-t border-gray-200 p-1">
                   <span className="text-xs text-gray-500">{dayjs().hour(hour).format("h A")}</span>
                   <ul className="list-disc pl-5">
                     {weekEvents
-                      .filter(event => dayjs(event.day).isSame(day.hour(hour), "hour"))
+                      .filter(event => dayjs(event.day).isSame(day, "day") && dayjs(event.day).hour() === hour)
                       .map(event => (
                         <li key={event.id} className="mb-2">
                           <CalendarEvent event={event} />

@@ -1,8 +1,8 @@
 import React, { useContext, useState } from "react";
 import GlobalContext from "../context/GlobalContext";
-import "./ViewSwitcherDropdown.css"; 
+import "./ViewSwitcherDrodown.css"; 
 
-export default function ViewSwitcherDropdown() {
+export default function ViewSwitcherDrodown() {
   const { viewMode, setViewMode } = useContext(GlobalContext);
   const [isOpen, setIsOpen] = useState(false);
 

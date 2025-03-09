@@ -2,12 +2,10 @@ import React, { useContext, useState } from "react";
 import GlobalContext from "../context/GlobalContext";
 
 const labelsClasses = [
-  "indigo",
   "gray",
   "green",
   "blue",
   "red",
-  "purple",
   "yellow",
   "pink",
   "teal",
