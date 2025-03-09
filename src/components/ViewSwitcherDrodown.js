@@ -2,70 +2,52 @@ import React, { useContext, useState } from "react";
 import GlobalContext from "../context/GlobalContext";
 import "./ViewSwitcherDrodown.css"; 
 
-export default function ViewSwitcherDrodown() {
+export default function ViewSwitcherDropdown() {
   const { viewMode, setViewMode } = useContext(GlobalContext);
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleViewChange = (mode) => {
-    setViewMode(mode);
+    setViewMode(mode.toLowerCase());
     setIsOpen(false);
   };
 
+  const viewOptions = [
+    { label: "Month", value: "month" },
+    { label: "Week", value: "week" },
+    { label: "Day", value: "day" },
+    { label: "Year", value: "year" },
+    { label: "Venues", value: "venues" }
+  ];
+
   return (
     <div className="relative inline-block text-left">
-      <div>
-        <button
-          type="button"
-          className="dropdown-button"
-          onClick={toggleDropdown}
-        >
-          <span>{viewMode.charAt(0).toUpperCase() + viewMode.slice(1)} View</span>
-          <svg
-            className="-mr-1 ml-2 h-5 w-5"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 111.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
-        </button>
-      </div>
+      <button
+        type="button"
+        className="border rounded-lg px-4 py-2 flex items-center space-x-2 bg-white hover:bg-gray-50"
+        onClick={toggleDropdown}
+      >
+        <span className="text-gray-700">{viewMode.charAt(0).toUpperCase() + viewMode.slice(1)} View</span>
+        <span className="material-icons-outlined text-gray-600">
+          {isOpen ? 'expand_less' : 'expand_more'}
+        </span>
+      </button>
 
       {isOpen && (
-        <div className="dropdown-menu">
-          <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+        <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-50">
+          {viewOptions.map((option) => (
             <button
-              className={`block px-4 py-2 text-sm text-blue-700 w-full text-left ${viewMode === "month" ? "active" : ""}`}
-              onClick={() => handleViewChange("month")}
+              key={option.value}
+              className={`
+                w-full px-4 py-2 text-sm text-left hover:bg-gray-100
+                ${viewMode === option.value ? 'bg-blue-50 text-blue-600' : 'text-gray-700'}
+              `}
+              onClick={() => handleViewChange(option.value)}
             >
-              Month 
+              {option.label} View
             </button>
-            <button
-              className={`block px-4 py-2 text-sm text-gray-700 w-full text-left ${viewMode === "week" ? "active" : ""}`}
-              onClick={() => handleViewChange("week")}
-            >
-              Week 
-            </button>
-            <button
-              className={`block px-4 py-2 text-sm text-gray-700 w-full text-left ${viewMode === "day" ? "active" : ""}`}
-              onClick={() => handleViewChange("day")}
-            >
-              Day 
-            </button>
-            <button
-              className={`block px-4 py-2 text-sm text-gray-700 w-full text-left ${viewMode === "year" ? "active" : ""}`}
-              onClick={() => handleViewChange("year")}
-            >
-              Year 
-            </button>
-          </div>
+          ))}
         </div>
       )}
     </div>

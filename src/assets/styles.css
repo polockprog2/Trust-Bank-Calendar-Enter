@@ -15,3 +15,12 @@
     transform: scale(0.9); /* Adjust the scale value to zoom out */
     transform-origin: top left;
   }
+  /* Add these styles */
+.venue-status {
+  transition: all 0.3s ease;
+}
+
+.venue-status:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}

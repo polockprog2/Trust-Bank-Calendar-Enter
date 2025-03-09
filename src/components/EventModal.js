@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import GlobalContext from "../context/GlobalContext";
+import dayjs from "dayjs";
 
 const labelsClasses = [
   "gray",
@@ -9,7 +10,14 @@ const labelsClasses = [
   "yellow",
   "pink",
   "teal",
-  
+];
+
+const venues = [
+  { id: 1, name: 'Conference Room A' },
+  { id: 2, name: 'Meeting Room 1' },
+  { id: 3, name: 'Board Room' },
+  { id: 4, name: 'Training Room' },
+  { id: 5, name: 'Auditorium' },
 ];
 
 export default function EventModal() {
@@ -18,7 +26,6 @@ export default function EventModal() {
     daySelected,
     dispatchCalEvent,
     selectedEvent,
-    savedEvents,
     multiDaySelection,
   } = useContext(GlobalContext);
 
@@ -39,18 +46,40 @@ export default function EventModal() {
       ? labelsClasses.find((lbl) => lbl === selectedEvent.label)
       : labelsClasses[0]
   );
-  const [reminder, setReminder] = useState(""); 
+  const [reminder, setReminder] = useState(
+    selectedEvent ? selectedEvent.reminder : ""
+  );
   const [startTime, setStartTime] = useState(
     selectedEvent ? selectedEvent.startTime : ""
   );
   const [endTime, setEndTime] = useState(
     selectedEvent ? selectedEvent.endTime : ""
   );
+  const [selectedVenue, setSelectedVenue] = useState(
+    selectedEvent ? selectedEvent.venue : ""
+  );
 
   function handleSubmit(e) {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!title.trim()) {
+      alert("Please enter a title");
+      return;
+    }
+
+    if (!startTime || !endTime) {
+      alert("Please select start and end times");
+      return;
+    }
+
+    if (!selectedVenue) {
+      alert("Please select a venue");
+      return;
+    }
+
     const calendarEvent = {
-      title,
+      title: title.trim(),
       description,
       location,
       email,
@@ -60,7 +89,11 @@ export default function EventModal() {
       reminder,
       startTime,
       endTime,
+      venue: selectedVenue,
+      startTimestamp: dayjs(`${daySelected.format('YYYY-MM-DD')} ${startTime}`).valueOf(),
+      endTimestamp: dayjs(`${daySelected.format('YYYY-MM-DD')} ${endTime}`).valueOf(),
     };
+
     if (selectedEvent) {
       dispatchCalEvent({ type: "update", payload: calendarEvent });
     } else {
@@ -123,6 +156,7 @@ export default function EventModal() {
                 ? daySelected.format("dddd, MMMM DD")
                 : multiDaySelection.map(day => day.format("dddd, MMMM DD")).join(", ")}
             </p>
+
             <span className="material-icons-outlined text-blue-400">
               access_time
             </span>
@@ -132,6 +166,7 @@ export default function EventModal() {
                 name="startTime"
                 placeholder="Start time"
                 value={startTime}
+                required
                 className="pt-3 border-0 text-blue-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
                 onChange={(e) => setStartTime(e.target.value)}
               />
@@ -140,10 +175,28 @@ export default function EventModal() {
                 name="endTime"
                 placeholder="End time"
                 value={endTime}
+                required
                 className="pt-3 border-0 text-blue-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
                 onChange={(e) => setEndTime(e.target.value)}
               />
             </div>
+
+            <span className="material-icons-outlined text-blue-400">
+              meeting_room
+            </span>
+            <select
+              value={selectedVenue}
+              onChange={(e) => setSelectedVenue(e.target.value)}
+              required
+              className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
+            >
+              <option value="">Select Venue</option>
+              {venues.map(venue => (
+                <option key={venue.id} value={venue.id}>
+                  {venue.name}
+                </option>
+              ))}
+            </select>
             
             <span className="material-icons-outlined text-blue-400">
               segment
@@ -153,10 +206,10 @@ export default function EventModal() {
               name="description"
               placeholder="Add a description"
               value={description}
-              required
               className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
               onChange={(e) => setDescription(e.target.value)}
             />
+
             <span className="material-icons-outlined text-blue-400">
               location_on
             </span>
@@ -168,6 +221,7 @@ export default function EventModal() {
               className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
               onChange={(e) => setLocation(e.target.value)}
             />
+
             <span className="material-icons-outlined text-blue-400">
               email
             </span>
@@ -179,6 +233,23 @@ export default function EventModal() {
               className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
               onChange={(e) => setEmail(e.target.value)}
             />
+
+            <span className="material-icons-outlined text-blue-400">
+              notifications
+            </span>
+            <select
+              value={reminder}
+              onChange={(e) => setReminder(e.target.value)}
+              className="pt-3 border-0 text-gray-600 pb-2 w-full border-b-2 border-gray-200 focus:outline-none focus:ring-0 focus:border-blue-500"
+            >
+              <option value="">No Reminder</option>
+              <option value="5">5 minutes before</option>
+              <option value="10">10 minutes before</option>
+              <option value="15">15 minutes before</option>
+              <option value="30">30 minutes before</option>
+              <option value="60">1 hour before</option>
+            </select>
+
             <span className="material-icons-outlined text-blue-400">
               bookmark_border
             </span>
