@@ -27,7 +27,18 @@ function savedTasksReducer(state, { type, payload }) {
       throw new Error();
   }
 }
-
+function savedVenuesReducer(state, { type, payload }) {
+  switch (type) {
+    case 'push':
+      return [...state, payload];
+    case 'update':
+      return state.map(venue => venue.id === payload.id ? payload : venue);
+    case 'delete':
+      return state.filter(venue => venue.id !== payload.id);
+    default:
+      throw new Error();
+  }
+}
 function initEvents() {
   const storageEvents = localStorage.getItem("savedEvents");
   const parsedEvents = storageEvents ? JSON.parse(storageEvents) : [];
@@ -39,22 +50,29 @@ function initTasks() {
   const parsedTasks = storageTasks ? JSON.parse(storageTasks) : [];
   return parsedTasks;
 }
+function initVenues() {
+  const storageVenues = localStorage.getItem('savedVenues');
+  return storageVenues ? JSON.parse(storageVenues) : [];
+}
 
 export default function ContextWrapper(props) {
   const [monthIndex, setMonthIndex] = useState(dayjs().month());
   const [smallCalendarMonth, setSmallCalendarMonth] = useState(null);
   const [daySelected, setDaySelected] = useState(dayjs());
-  const [showTaskModal, setShowTaskModal] = useState(false);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [showTaskModal, setShowTaskModal] = useState(false);
+  const [showVenueModal, setShowVenueModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [selectedTask, setSelectedTask] = useState(null); // Add selectedTask state
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [selectedVenue, setSelectedVenue] = useState(null);
   const [labels, setLabels] = useState([]);
   const [taskLabels, setTaskLabels] = useState([]);
-  const [savedEvents, dispatchCalEvent] = useReducer(savedEventsReducer, [], initEvents);
-  const [savedTasks, dispatchCalTask] = useReducer(savedTasksReducer, [], initTasks);
   const [viewMode, setViewMode] = useState("month");
   const [multiDaySelection, setMultiDaySelection] = useState([]);
-
+  const [savedEvents, dispatchCalEvent] = useReducer(savedEventsReducer, [], initEvents);
+  const [savedTasks, dispatchCalTask] = useReducer(savedTasksReducer, [], initTasks);
+  const [savedVenues, dispatchVenueBooking] = useReducer(savedVenuesReducer, [], initVenues);
+ 
   const filteredEvents = useMemo(() => {
     return savedEvents.filter((evt) =>
       labels
@@ -73,6 +91,12 @@ export default function ContextWrapper(props) {
     );
   }, [savedTasks, taskLabels]);
 
+  const filteredVenues = useMemo(() => {
+    return savedVenues.filter(venue => 
+      dayjs(venue.day).format('YYYY-MM-DD') === daySelected.format('YYYY-MM-DD')
+    );
+  }, [savedVenues, daySelected]);
+
   useEffect(() => {
     localStorage.setItem("savedEvents", JSON.stringify(savedEvents));
   }, [savedEvents]);
@@ -80,6 +104,10 @@ export default function ContextWrapper(props) {
   useEffect(() => {
     localStorage.setItem("savedTasks", JSON.stringify(savedTasks));
   }, [savedTasks]);
+
+  useEffect(() => {
+    localStorage.setItem("savedVenues", JSON.stringify(savedVenues));
+  }, [savedVenues]);
 
   useEffect(() => {
     setLabels((prevLabels) => {
@@ -104,6 +132,25 @@ export default function ContextWrapper(props) {
       });
     });
   }, [savedTasks]);
+
+  useEffect(() => {
+    // Track venue bookings in labels
+    const venueLabels = savedVenues.map(venue => ({
+      label: 'venue',
+      checked: true,
+      color: 'blue'
+    }));
+    
+    if (venueLabels.length > 0) {
+      setLabels(prevLabels => {
+        const existingVenueLabel = prevLabels.find(l => l.label === 'venue');
+        if (!existingVenueLabel) {
+          return [...prevLabels, ...venueLabels];
+        }
+        return prevLabels;
+      });
+    }
+  }, [savedVenues]);
 
   useEffect(() => {
     if (smallCalendarMonth !== null) {
@@ -141,28 +188,35 @@ export default function ContextWrapper(props) {
         daySelected,
         setDaySelected,
         showEventModal,
+        setShowEventModal,
         showTaskModal,
         setShowTaskModal,
-        setShowEventModal,
-        dispatchCalEvent,
-        dispatchCalTask,
+        showVenueModal,
+        setShowVenueModal,
         selectedEvent,
         setSelectedEvent,
-        selectedTask, // Provide selectedTask
-        setSelectedTask, // Provide setSelectedTask
+        selectedTask,
+        setSelectedTask,
+        selectedVenue,
+        setSelectedVenue,
         savedEvents,
+        dispatchCalEvent,
         savedTasks,
-        setLabels,
+        dispatchCalTask,
+        savedVenues,
+        dispatchVenueBooking,
         labels,
+        setLabels,
         taskLabels,
-        updateLabel,
-        updateTaskLabel,
+        setTaskLabels,
         filteredEvents,
         filteredTasks,
         viewMode,
         setViewMode,
         multiDaySelection,
         setMultiDaySelection,
+        updateLabel,
+        updateTaskLabel
       }}
     >
       {props.children}

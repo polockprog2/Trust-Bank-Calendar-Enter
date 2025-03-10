@@ -28,6 +28,18 @@ const savedEventsReducer = (state, { type, payload }) => {
       throw new Error();
   }
 };
+const savedVenuesReducer = (state, { type, payload }) => {
+  switch (type) {
+    case "push":
+      return [...state, { ...payload, id: Date.now() }];
+    case "update":
+      return state.map(booking => booking.id === payload.id ? payload : booking);
+    case "delete":
+      return state.filter(booking => booking.id !== payload.id);
+    default:
+      throw new Error("Invalid venue action type");
+  }
+};
 
 const initEvents = () => {
   const storageEvents = localStorage.getItem("savedEvents");
@@ -40,20 +52,29 @@ const initTasks = () => {
   const parsedTasks = storageTasks ? JSON.parse(storageTasks) : [];
   return parsedTasks;
 };
+const initVenues = () => {
+  const storageVenues = localStorage.getItem("savedVenues");
+  const parsedVenues = storageVenues ? JSON.parse(storageVenues) : [];
+  return parsedVenues;
+};
 
 export const GlobalProvider = ({ children }) => {
-  const [savedTasks, dispatchCalTask] = useReducer(savedTasksReducer, [], initTasks);
-  const [savedEvents, dispatchCalEvent] = useReducer(savedEventsReducer, [], initEvents);
   const [monthIndex, setMonthIndex] = useState(dayjs().month());
-  const [viewMode, setViewMode] = useState("month");
+  const [smallCalendarMonth, setSmallCalendarMonth] = useState(null);
+  const [daySelected, setDaySelected] = useState(dayjs());
   const [showEventModal, setShowEventModal] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
-  const [daySelected, setDaySelected] = useState(null);
+  const [showVenueModal, setShowVenueModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [selectedTask, setSelectedTask] = useState(null); // Add selectedTask state
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [selectedVenue, setSelectedVenue] = useState(null);
   const [labels, setLabels] = useState([]);
   const [taskLabels, setTaskLabels] = useState([]);
+  const [viewMode, setViewMode] = useState("month");
   const [multiDaySelection, setMultiDaySelection] = useState([]);
+  const [savedEvents, dispatchCalEvent] = useReducer(savedEventsReducer, [], initEvents);
+  const [savedTasks, dispatchCalTask] = useReducer(savedTasksReducer, [], initTasks);
+  const [savedVenues, dispatchVenueBooking] = useReducer(savedVenuesReducer, [], initVenues);
 
   useEffect(() => {
     localStorage.setItem("savedEvents", JSON.stringify(savedEvents));
@@ -62,6 +83,10 @@ export const GlobalProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("savedTasks", JSON.stringify(savedTasks));
   }, [savedTasks]);
+
+  useEffect(() => {
+    localStorage.setItem("savedVenues", JSON.stringify(savedVenues));
+  }, [savedVenues]);
 
   useEffect(() => {
     setLabels((prevLabels) => {
@@ -118,33 +143,41 @@ export const GlobalProvider = ({ children }) => {
       value={{
         monthIndex,
         setMonthIndex,
-        smallCalendarMonth: 0,
-        setSmallCalendarMonth: () => {},
+        smallCalendarMonth,
+        setSmallCalendarMonth,
         daySelected,
         setDaySelected,
         showEventModal,
         setShowEventModal,
         showTaskModal,
         setShowTaskModal,
-        dispatchCalEvent,
-        dispatchCalTask,
-        savedEvents,
-        savedTasks,
+        showVenueModal,
+        setShowVenueModal,
         selectedEvent,
         setSelectedEvent,
-        selectedTask, // Provide selectedTask
-        setSelectedTask, // Provide setSelectedTask
-        setLabels,
+        selectedTask,
+        setSelectedTask,
+        selectedVenue,
+        setSelectedVenue,
+        savedEvents,
+        dispatchCalEvent,
+        savedTasks,
+        dispatchCalTask,
+        savedVenues,
+        dispatchVenueBooking,
         labels,
+        setLabels,
         taskLabels,
-        updateLabel,
-        updateTaskLabel,
+        setTaskLabels,
         filteredEvents,
         filteredTasks,
         viewMode,
         setViewMode,
         multiDaySelection,
         setMultiDaySelection,
+        updateLabel,
+        updateTaskLabel
+        
       }}
     >
       {children}

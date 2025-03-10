@@ -11,21 +11,32 @@ const venues = [
 ];
 
 export default function Venues() {
-  const { savedEvents, daySelected } = useContext(GlobalContext);
+  const { 
+    savedVenues, 
+    daySelected, 
+    setShowVenueModal, // Changed this from setShowEventModal
+    setSelectedVenue  // Changed this from setSelectedEvent
+  } = useContext(GlobalContext);
 
+  // Only get events that are specifically assigned to venues
   const getVenueBookings = (venueId) => {
-    return savedEvents.filter(event => 
-      event.venue === venueId.toString() && 
-      dayjs(event.day).format('YYYY-MM-DD') === daySelected.format('YYYY-MM-DD')
+    return savedVenues.filter(booking => 
+      booking.venueId === venueId.toString() && 
+      dayjs(booking.day).format('YYYY-MM-DD') === daySelected.format('YYYY-MM-DD')
     );
   };
 
-  const getTimeRanges = (bookings) => {
-    return bookings.map(event => ({
-      start: dayjs(event.startTime),
-      end: dayjs(event.endTime),
-      title: event.title
-    }));
+   const handleBookVenue = (venue) => {
+    setSelectedVenue({
+      title: '',
+      day: daySelected.valueOf(),
+      venueId: venue.id.toString(),
+      venueName: venue.name,
+      capacity: venue.capacity,
+      label: 'blue',
+      type: 'venue-booking'
+    });
+    setShowVenueModal(true);
   };
 
   const isVenueAvailable = (bookings) => {
@@ -41,7 +52,12 @@ export default function Venues() {
   return (
     <div className="flex-1 h-screen overflow-y-auto">
       <div className="p-4">
-        <h2 className="text-2xl font-bold mb-4">Venue Availability</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Venue Availability</h2>
+          <div className="text-sm text-gray-500">
+            {daySelected.format('dddd, MMMM D, YYYY')}
+          </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {venues.map(venue => {
             const bookings = getVenueBookings(venue.id);
@@ -49,14 +65,22 @@ export default function Venues() {
 
             return (
               <div key={venue.id} 
-                   className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+                className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex justify-between items-start">
                   <h3 className="font-semibold text-gray-800">{venue.name}</h3>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {available ? 'Available' : 'Occupied'}
-                  </span>
+                  <div className="flex items-center space-x-2">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }`}>
+                      {available ? 'Available' : 'Occupied'}
+                    </span>
+                    <button
+                      onClick={() => handleBookVenue(venue)}
+                      className="text-xs px-2 py-1 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
+                    >
+                      Book
+                    </button>
+                  </div>
                 </div>
                 
                 <div className="mt-2 text-sm text-gray-600">
@@ -70,7 +94,7 @@ export default function Venues() {
                     <div className="space-y-2">
                       {bookings.map((booking, idx) => (
                         <div key={idx} 
-                             className="text-xs bg-gray-50 p-2 rounded border border-gray-100">
+                          className="text-xs bg-gray-50 p-2 rounded border border-gray-100">
                           <div className="font-medium">{booking.title}</div>
                           <div className="text-gray-500">
                             {dayjs(booking.startTime).format('HH:mm')} - 

@@ -24,8 +24,8 @@ export default function CalendarEvent({ event }) {
       onDragStart={handleDragStart}
       onClick={handleClick}
     >
-      <span>{event.title}</span>
-      <span>{event.startTime} - {event.endTime}</span>
+      <span className="font-bold">{event.title}</span>
+      <span className="text-white/90">{event.startTime} - {event.endTime}</span>
     </div>
   );
 }
