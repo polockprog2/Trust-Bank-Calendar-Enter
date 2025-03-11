@@ -10,6 +10,8 @@ export default function DayView() {
     setShowEventModal, 
     setDaySelected,
     setSelectedEvent,
+    setSelectedTask,
+    setShowTaskModal,
     dispatchCalEvent 
   } = useContext(GlobalContext);
   
@@ -38,11 +40,18 @@ export default function DayView() {
     setShowEventModal(true);
   }, [daySelected, setDaySelected, setShowEventModal]);
 
-  // Handle event click
+  // Handle event & task click
+  const handleTaskClick = useCallback((task) => {
+    setSelectedTask(task);
+    setShowTaskModal(true);
+    setShowEventModal(false); // Ensure event modal is not shown
+  }, [setSelectedTask, setShowTaskModal, setShowEventModal]);
+  
   const handleEventClick = useCallback((event) => {
     setSelectedEvent(event);
     setShowEventModal(true);
-  }, [setSelectedEvent, setShowEventModal]);
+    setShowTaskModal(false); // Ensure task modal is not shown
+  }, [setSelectedEvent, setShowEventModal, setShowTaskModal]);
 
   // Update current time every minute
   useEffect(() => {
@@ -254,7 +263,22 @@ export default function DayView() {
               <div className="absolute -left-2 -top-2 w-4 h-4 bg-red-500 rounded-full shadow-md" />
             </div>
           )}
-
+          {/* Tasks */}
+          {dayTasks.map(task => (
+            <div
+              key={task.id}
+              className={`absolute left-[5px] right-[5px] h-6 rounded-lg p-1 
+                text-sm bg-${task.label}-50 border border-${task.label}-200 
+                hover:shadow-md transition-shadow cursor-pointer`}
+              style={{
+                top: getTimePosition(dayjs(task.dueDate)),
+                zIndex: 25
+              }}
+              onClick={() => handleTaskClick(task)}
+            >
+              <div className="font-semibold truncate">{task.title}</div>
+            </div>
+          ))}
           {/* Events */}
           {dayEvents.map(event => {
             const isBeingDragged = draggedEvent?.id === event.id;

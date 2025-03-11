@@ -5,20 +5,7 @@ const priorityClasses = ["low", "medium", "high"];
 const statusClasses = ["todo", "in-progress", "done"];
 
 const labelsClasses = [
-  
-  "orange",
-  "cyan",
-  "lime",
-  "pink",
   "purple",
-  "amber",
-  "navy",
-  "maroon",
-  "olive",
-  "coral",
-  "salmon",
-  "turquoise",
- 
 ];
 
 export default function TaskModal() {

@@ -32,7 +32,9 @@ export default function WeekView() {
   function handleTimeSlotClick(day, hour, minute = 0) {
     setDaySelected(day.hour(hour).minute(minute));
     setShowEventModal(true);
+    
   }
+  
 
   return (
     <div className="flex-1 h-screen overflow-y-auto">

@@ -20,14 +20,6 @@ export default function Venues() {
     );
   };
 
-  const getTimeRanges = (bookings) => {
-    return bookings.map(event => ({
-      start: dayjs(event.startTime),
-      end: dayjs(event.endTime),
-      title: event.title
-    }));
-  };
-
   const isVenueAvailable = (bookings) => {
     if (bookings.length === 0) return true;
     const currentTime = dayjs();
@@ -65,7 +57,7 @@ export default function Venues() {
                 </div>
 
                 {bookings.length > 0 && (
-                  <div className="mt-3">
+                  <div className="mt-3 bg-blue-200 p-4 rounded border border-gray-100">
                     <h4 className="text-sm font-medium text-gray-700 mb-2">Today's Bookings:</h4>
                     <div className="space-y-2">
                       {bookings.map((booking, idx) => (
