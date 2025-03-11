@@ -7,7 +7,9 @@ export default function WeekView() {
     savedEvents, 
     savedTasks, 
     setShowEventModal, 
-    setDaySelected 
+    setDaySelected,
+    setSelectedEvent,
+    setSelectedTask
   } = useContext(GlobalContext);
   const [currentTime, setCurrentTime] = useState(dayjs());
   const [startOfWeek, setStartOfWeek] = useState(dayjs().startOf("week"));
@@ -31,13 +33,25 @@ export default function WeekView() {
 
   function handleTimeSlotClick(day, hour, minute = 0) {
     setDaySelected(day.hour(hour).minute(minute));
+    setSelectedEvent(null); // Clear any selected event
+    setSelectedTask(null); // Clear any selected task
+    setShowEventModal(true);
+  }
+
+  function handleEventClick(event) {
+    setSelectedEvent(event);
+    setShowEventModal(true);
+  }
+
+  function handleTaskClick(task) {
+    setSelectedTask(task);
     setShowEventModal(true);
   }
 
   return (
     <div className="flex-1 h-screen overflow-y-auto">
       {/* Header */}
-      <header className="flex items-center justify-between px-4 py-2 border-b sticky top-0 bg-white z-30">
+      <header className="flex items-center justify-between px-4 py-2 border-b sticky top-0 bg-white z-10">
         <div className="flex items-center space-x-4">
           <button onClick={handlePrevWeek} className="p-2 hover:bg-gray-100 rounded-full">
             <span className="material-icons-outlined">chevron_left</span>
@@ -58,7 +72,7 @@ export default function WeekView() {
       </header>
 
       {/* Week days header */}
-      <div className="flex border-b sticky top-16 bg-white z-20">
+      <div className="flex border-b sticky top-16 bg-white z-10">
         <div className="w-20" /> {/* Time gutter */}
         {daysOfWeek.map(day => (
           <div key={day.format("YYYY-MM-DD")} className="flex-1 text-center py-2">
@@ -75,7 +89,7 @@ export default function WeekView() {
       {/* Time Grid */}
       <div className="flex flex-1">
         {/* Time labels */}
-        <div className="w-20 border-r sticky left-0 bg-white z-10">
+        <div className="w-20 border-r sticky left-0 bg-white z-0">
           {hoursOfDay.map(hour => (
             <div key={hour} className="h-[50px] text-right pr-2 -mt-3">
               <span className="text-xs text-gray-500">
@@ -86,13 +100,13 @@ export default function WeekView() {
         </div>
 
         {/* Events grid */}
-        <div className="flex flex-1">
+         <div className="flex flex-1 relative z-0">
           {daysOfWeek.map(day => (
             <div key={day.format("YYYY-MM-DD")} className="flex-1 relative">
               {/* Current time indicator */}
               {day.isSame(dayjs(), 'day') && (
                 <div 
-                  className="absolute w-full border-t-2 border-red-500 z-20"
+                  className="absolute w-full border-t-2 border-red-500 z-10"
                   style={{ top: currentTimePosition }}
                 >
                   <div className="absolute -left-2 -top-2 w-4 h-4 bg-red-500 rounded-full" />
@@ -118,11 +132,12 @@ export default function WeekView() {
                     .map(event => (
                       <div
                         key={event.id}
-                        className={`absolute left-0 right-0 mx-1 p-1 rounded text-sm bg-${event.label}-200 border border-${event.label}-300`}
+                        className={`absolute left-0 right-0 mx-1 p-1 rounded text-sm bg-${event.label}-200 border border-${event.label}-300 cursor-pointer`}
                         style={{
                           top: `${(dayjs(event.day).minute() / 60) * 100}%`,
                           height: `${(dayjs(event.endTime || event.day).diff(dayjs(event.day), 'minute') / 60) * 100}%`
                         }}
+                        onClick={() => handleEventClick(event)}
                       >
                         <div className="font-semibold truncate">{event.title}</div>
                         <div className="text-xs">
@@ -140,11 +155,12 @@ export default function WeekView() {
                     .map(task => (
                       <div
                         key={task.id}
-                        className={`absolute left-0 right-0 mx-1 p-1 rounded text-sm bg-${task.label}-100 border border-${task.label}-200`}
+                        className={`absolute left-0 right-0 mx-1 p-1 rounded text-sm bg-${task.label}-100 border border-${task.label}-200 cursor-pointer`}
                         style={{
                           top: `${(dayjs(task.dueDate).minute() / 60) * 100}%`,
                           height: "25px"
                         }}
+                        onClick={() => handleTaskClick(task)}
                       >
                         <div className="font-semibold truncate">{task.title}</div>
                       </div>
@@ -155,6 +171,7 @@ export default function WeekView() {
           ))}
         </div>
       </div>
+      
     </div>
   );
 }

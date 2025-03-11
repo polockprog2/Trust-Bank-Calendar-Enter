@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import GlobalContext from "../context/GlobalContext";
 import dayjs from "dayjs";
 
@@ -26,14 +26,15 @@ export default function EventModal() {
     daySelected,
     dispatchCalEvent,
     selectedEvent,
+    selectedTask,
     multiDaySelection,
   } = useContext(GlobalContext);
 
   const [title, setTitle] = useState(
-    selectedEvent ? selectedEvent.title : ""
+    selectedEvent ? selectedEvent.title : selectedTask ? selectedTask.title : ""
   );
   const [description, setDescription] = useState(
-    selectedEvent ? selectedEvent.description : ""
+    selectedEvent ? selectedEvent.description : selectedTask ? selectedTask.description : ""
   );
   const [location, setLocation] = useState(
     selectedEvent ? selectedEvent.location : ""
@@ -44,6 +45,8 @@ export default function EventModal() {
   const [selectedLabel, setSelectedLabel] = useState(
     selectedEvent
       ? labelsClasses.find((lbl) => lbl === selectedEvent.label)
+      : selectedTask
+      ? labelsClasses.find((lbl) => lbl === selectedTask.label)
       : labelsClasses[0]
   );
   const [reminder, setReminder] = useState(
@@ -58,6 +61,20 @@ export default function EventModal() {
   const [selectedVenue, setSelectedVenue] = useState(
     selectedEvent ? selectedEvent.venue : ""
   );
+
+  useEffect(() => {
+    if (selectedEvent || selectedTask) {
+      setTitle(selectedEvent ? selectedEvent.title : selectedTask.title);
+      setDescription(selectedEvent ? selectedEvent.description : selectedTask.description);
+      setLocation(selectedEvent ? selectedEvent.location : "");
+      setEmail(selectedEvent ? selectedEvent.email : "");
+      setSelectedLabel(selectedEvent ? selectedEvent.label : selectedTask.label);
+      setReminder(selectedEvent ? selectedEvent.reminder : "");
+      setStartTime(selectedEvent ? selectedEvent.startTime : "");
+      setEndTime(selectedEvent ? selectedEvent.endTime : "");
+      setSelectedVenue(selectedEvent ? selectedEvent.venue : "");
+    }
+  }, [selectedEvent, selectedTask]);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -114,7 +131,7 @@ export default function EventModal() {
   }
 
   return (
-    <div className="h-screen w-full fixed left-0 top-0 flex justify-center items-center">
+    <div className="h-screen w-full fixed left-0 top-0 flex justify-center items-center z-50">
       <form className="bg-white rounded-lg shadow-2xl w-1/3">
         <header className="bg-gray-100 px-4 py-2 flex justify-between items-center">
           <span className="material-icons-outlined text-gray-400">
